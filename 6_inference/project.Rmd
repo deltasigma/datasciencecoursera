@@ -4,53 +4,78 @@ author: "DeltaSigma"
 output: html_document
 ---
 ## Overview
-In this brief study we will try to understand the behavior of the **Exponencial Distribution**. To do that, we will perform simulations and we will compare the results with the theoretical predictions. We hope that this study will be as useful to one who reads as it was useful to us that wrote it.
-
-## Simulations
-The first step will be to perform a 1000 simulation of exponentials and then generate 1000 averages of 40 exponentials. To do that we will use the following R code:
-
-```{r}
-# Run simulation of 1000 exponentials
-nosim <- 1000
-lambda <- 0.2
-exp1000 <- rexp(nosim,lambda)
-
-# Run 1000 simulation of average of 40 exponentials
-mex = NULL
-for (i in 1:nosim) mex = c(mex,mean(rexp(40,lambda)))
-```
-
-In our code **exp1000** hold the 1000 simulated exponentials and **mex** holds the 1000 averages of 40 exponentials.
+In this brief study we will try to understand the behavior of the **Exponencial Distribution**. To do that, we will perform simulations and we will compare the results with the theoretical predictions. We hope that this study will be as useful to one who reads it as it was useful to we that wrote it.
 
 ## Sample Mean versus Theoretical Mean
-Include figures with titles. In the figures, highlight the means you are comparing. Include text that explains the figures and what is shown on them, and provides appropriate numbers.
+From theory we know that the mean and the standard deviation for the exponential distribution is given by $$ \frac{1}{lambda} $$
 
-```{r, echo=FALSE}
-# Set margins and multi column graph
+We chose our *lambda* to be **0.2**. So, our theoretical mean and standard deviation are $$ sd = mean = \frac{1}{0.2} = 5 $$
+
+So we know that the distribution is centered at **5**.
+
+With the help of simulations we will confront the theoretical prediction with the empirical results. We will plot the mean of $n$ averages and the theoretical prediction (blue line) in a single figure to see if the averages converge to the expected value.
+
+```{r Mean Simulation, echo = FALSE, fig.align='center'}
+set.seed(3)
+n <- 10000; lambda = 0.2; 
+means <- cumsum(rexp(n,lambda)) / (1  : n); 
 library(ggplot2)
-par(mar = rep(2, 4))
-par(mfrow=c(1,2))
-
-hist(exp1000)
-hist(mex)
-
-dat <- data.frame(
-        x = c(exp1000,mex),
-        t = factor(rep(c('exp','avgexp'), rep(nosim, 2)))
-        )
-
-g <- ggplot(dat, aes(x = x, fill = t)) + geom_histogram(binwidth=.3, colour = "black") 
-g <- g + stat_function(fun = dnorm, size = 2)
-g + facet_grid(. ~ t)
-
-
-
+g <- ggplot(data.frame(x = 1 : n, y = means), aes(x = x, y = y)) 
+g <- g + geom_hline(yintercept = 5, color="blue") + geom_line(size = 2) 
+g <- g + geom_vline(xintercept = 1500, color="black", linetype="dotted") 
+g <- g + geom_line(size = 2) 
+g <- g + labs(x = "Number of obs", y = "Cumulative mean")
+g
 ```
-
-We can easily see that the exponential distribution does not look like a normal distribution but the distribution of averages of 40 exponentials does.
+It is clear from the graphic that around $n = 1500$ (dotted line) our simulation is already very close to the theoretical value
 
 ## Sample Variance versus Theoretical Variance
-Include figures (output from R) with titles. Highlight the variances you are comparing. Include text that explains your understanding of the differences of the variances.
+The variance for a population is given by $\sigma^2$ and the variance for averages of $n$ samples is given by $\frac{\sigma^2}{n}$. We chose n to be 40 in our example.
+
+In the previous section we discussed that the standard deviation for the exponential distribution is given by $\frac{1}{lambda}$ and we set our *lambda* to be **0.2**. So, our population variance is $\sigma^2 = (\frac{1}{0.2})^2 = 25$ and our sample variance is $\frac{\sigma^2}{n} = \frac{25}{40}=0.625$. 
+
+Now we will use simulation again to check the prediction to the empirical results. We will plot the variance of 40 averages and the theoretical sample variance prediction (blue line) in a single figure to see if the variance converge to the expected value.
+
+```{r Variance Simulation, echo = FALSE, fig.align='center'}
+nosim  <- 10000 ; avenum <- 40 ; lambda <- 0.2
+
+# Calculate n means for the samples
+meanForty = NULL
+for (i in 1:nosim) meanForty = c(meanForty,mean(rexp(avenum,lambda)))
+
+# Calculate variance for n samples
+variance = NULL
+for (i in 1:nosim) variance = c(variance,var(meanForty[1:i]))
+
+library(ggplot2)
+g <- ggplot(data.frame(x = 2 : nosim , y = variance[2:nosim]),
+            aes(x = x, y = y)) 
+g <- g + geom_hline(yintercept = 0.625, color="blue") + geom_line(size = 2) 
+#g <- g + geom_vline(xintercept = 1500, color="black", linetype="dotted") 
+#g <- g + geom_line(size = 2) 
+g <- g + labs(x = "Number of Simulations", y = "Variance")
+g
+```
+You can see that as the number of simulations increase the sample variance gets close to the theoretical value.
 
 ## Distribution
-Via figures and text, explain how one can tell the distribution is approximately normal. 
+From theory we know that the sample distribution of averages is normally distributed. To see that we will plot the sample histogram.
+
+```{r normality, echo = FALSE, fig.align='center'}
+# Prepare histogram
+fortyNormal <- (meanForty-mean(meanForty)) / sd(meanForty)
+hist(fortyNormal, prob=TRUE, main="Sample Distribution for Average of 40",
+     xlab="sd", ylab="prob", xlim=c(-3, 3))
+lines(density(fortyNormal, adjust=2), lty="dotted", col="blue")
+normals <- rnorm(100000, mean=0, sd=1)
+curve(dnorm(x, mean=mean(normals), sd=sd(normals)), add=TRUE, col="red")
+```
+
+We normalized the sample by subtracting the mean and dividing by the standard deviation.
+
+In the above graphic, the **blue** dotted line represents the probability function for this sample and the **red** line represents the normal distribution.
+
+```{r exp distribution, echo = FALSE, fig.align='center'}
+exp10000 <- rexp(10000,lambda)
+hist(exp10000, prob=TRUE)
+```
