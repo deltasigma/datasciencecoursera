@@ -1,0 +1,114 @@
+---
+title: "ToothGrowth"
+author: "Fábio Franco Costa"
+date: "February 21, 2015"
+output: html_document
+---
+
+In this project we will study the **ToothGrowth** dataset. This dataset presents the response in the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1 and 2mg) with each of two delivery methods: orange juice or ascorbic acid.
+
+## Summary
+To help in our analisys we will summarize the data by dose and delivery methods creating a mean (Average), standard deviation (SD) and standard error (SE), lower and upper boundaries for the confidence interval (icLow and icHigh) for each. The results can be seen in the following table:
+```{r summary data, echo=FALSE}
+library(datasets)
+
+# Data frame for summary statistics
+sumData <- data.frame()
+
+# summarizing data
+for(sup in unique(ToothGrowth$supp)) {
+        # each supp type
+        for(dose in unique(ToothGrowth$dose)) {
+                n <- length(ToothGrowth[ToothGrowth$supp == sup & 
+                                        ToothGrowth$dose == dose, ]$len)
+                m <- mean(ToothGrowth[ToothGrowth$supp == sup & 
+                                      ToothGrowth$dose == dose, ]$len)
+                s <- sd(ToothGrowth[ToothGrowth$supp == sup & 
+                                    ToothGrowth$dose == dose, ]$len)
+                e <- s/sqrt(n)
+                
+                l <- m - e * qt(.975, df = n -1)
+                
+                h <- m + e * qt(.975, df = n -1)
+                
+                tDF <- data.frame("Sup"=sup,
+                                  "Dose" = dose,
+                                  "n" = n,
+                                  "icLow" = l,
+                                  "Average" = m,
+                                  "icHigh" = h,
+                                  "SD" = s,
+                                  "SE" = e)
+        sumData <- rbind(sumData,tDF)
+        }
+        rm(sup,dose,n,m,s,e,tDF,l,h)
+}
+
+sumData
+```
+
+To get a sense of data, look at this graph:
+
+```{r exploratory graph, echo=FALSE}
+# Plot
+library(ggplot2)
+
+# Create better levels name
+levels(sumData$Sup)[levels(sumData$Sup)=="OJ"] <- "Orange Juice"
+levels(sumData$Sup)[levels(sumData$Sup)=="VC"] <- "Ascorbic Acid"
+
+g <- ggplot(sumData, aes(x = sumData$Dose, 
+                         y = sumData$Average, 
+                         color = sumData$Sup))
+g <- g + geom_errorbar(aes(ymin=sumData$Average-sumData$SE,
+                           ymax=sumData$Average+sumData$SE), width=.1)
+g <- g + geom_line()
+g <- g + geom_point()
+g <- g + labs(x = "Dose (mg)", y = "Length (u)")
+#g <- g + guides(fill=guide_legend(title=NULL))
+#g <- g + scale_fill_manual(name="Delivery Method")
+g
+```
+
+We can see that the average length increase with the dosage and that **orange juice** generates lengthier tooth with the two lower doses. For 2 mg, both delivery methods seems to bring the same results.
+
+To be shure, we will perform hipoteses tests on 0.5 an 1.0 mg doses to check if this effect could be due to chance.
+
+## Hipotesis test for Dose = 0.5 mg
+
+We want to test:
+
+```{r Hipoteses test 0.5, echo=FALSE}
+H0 <- sumData$Average[sumData$Dose == 0.5 & sumData$Sup == "Orange Juice"]
+Ha <- sumData$icHigh[sumData$Dose == 0.5 & sumData$Sup == "Ascorbic Acid"]
+SE <- sumData$SE[sumData$Dose == 0.5 & sumData$Sup == "Orange Juice"]
+ZS <- (H0 - Ha) / SE
+```
+
+* $H_0 : \mu = `r H0`$  
+* $H_a : \mu < `r format(Ha, digits=4)`$  
+
+where $\mu$ is the mean tooth length for the 0.5 mg dose. Our assumption here is that the upper boundary of the Ascorbic Acid length should be eliminated as possible value to the average of the Orange Juice length at the specified dose.
+
+Calculating our Z-score $$ Z = \frac{`r H0` - `r Ha`}{`r SE`} = `r ZS` $$ is greater than $1.645$, so we rule out $H_a$.
+
+## Hipotesis test for Dose = 1 mg
+
+We want to test:
+
+```{r Hipoteses test 1, echo=FALSE}
+H0 <- sumData$Average[sumData$Dose == 1 & sumData$Sup == "Orange Juice"]
+Ha <- sumData$icHigh[sumData$Dose == 1 & sumData$Sup == "Ascorbic Acid"]
+SE <- sumData$SE[sumData$Dose == 1 & sumData$Sup == "Orange Juice"]
+ZS <- (H0 - Ha) / SE
+```
+
+* $H_0 : \mu = `r H0`$  
+* $H_a : \mu < `r format(Ha, digits=4)`$  
+
+where $\mu$ is the mean tooth length for the 1 mg dose. Our assumption are the same here and is that the upper boundary of the Ascorbic Acid length should be eliminated as possible value to the average of the Orange Juice length at the specified dose.
+
+Calculating our Z-score $$ Z = \frac{`r H0` - `r Ha`}{`r SE`} = `r ZS` $$ is greater than $1.645$, so we rule out $H_a$.
+
+## Conclusions
+In this study we were able to show that *orange juice* is the delivery method that leads to greater size in tooth length in both 0.5 and 1 mg doses. But the efficiency diference is nonexistent for the 2.0 mg dose. It is also clear that the tooth lengh are positively influenced by the vitamin C dosage no matter the delivery strategy.

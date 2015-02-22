@@ -75,7 +75,10 @@ We normalized the sample by subtracting the mean and dividing by the standard de
 
 In the above graphic, the **blue** dotted line represents the probability function for this sample and the **red** line represents the normal distribution.
 
+If we plot the distribution of $10000$ random exponentials we get his distribution.
 ```{r exp distribution, echo = FALSE, fig.align='center'}
 exp10000 <- rexp(10000,lambda)
-hist(exp10000, prob=TRUE)
+hist(exp10000, prob=TRUE, main="Distribution for 10000 random exponentials",
+     ylab="prob", xlab="obs",)
 ```
+So it is clear that this distribution is very diferent than the distribution of average of 40 exponentials.
