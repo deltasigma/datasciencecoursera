@@ -1,0 +1,34 @@
+---
+title: "MPG: Does Transmission Type Matters?"
+output: pdf_document
+---
+## Executive Summary
+In this analisys we explore how a vehicle transmission type affects the MPG performance.
+???Is an automatic or manual transmission better for MPG???
+"Quantify the MPG difference between automatic and manual transmissions"
+
+## Analisys
+
+```{r}
+plot(mtcars$mpg ~ mtcars$am)
+
+
+model <- lm(mpg ~ am + cyl + disp + hp -1, mtcars)
+
+
+library("ggplot2")g
+carParameter <- ggplot(mtcars, aes(x = am, y = mpg)) + geom_point(size=1)
+carParameter <- carParameter + facet_grid(. ~ cyl)
+```
+
+
+Did the report include an executive summary?
+Did the student do some exploratory data analyses?
+Did the student do a residual plot and some diagnostics?
+Did the student quantify the uncertainty in their conclusions and/or perform an inference correctly?
+
+Did the student interpret the coefficients correctly?
+Did the student fit multiple models and detail their strategy for model selection?
+Did the student answer the questions of interest or detail why the question(s) is (are) not answerable?
+Was the report brief (about 2 pages long) for the main body of the report and no longer than 5 with supporting appendix of figures?
+Was the report done in Rmd (knitr)?
