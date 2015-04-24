@@ -1,0 +1,17 @@
+Q1
+adData = data.frame(diagnosis,predictors)
+trainIndex = createDataPartition(diagnosis, p = 0.50,list=FALSE)
+training = adData[trainIndex,]
+testing = adData[-trainIndex,]
+
+Q2
+
+Q3
+There are values of zero so when you take the log() transform those values will be -Inf. 
+
+Q4
+7
+
+Q5
+Non-PCA Accuracy: 0.65
+PCA Accuracy: 0.72 

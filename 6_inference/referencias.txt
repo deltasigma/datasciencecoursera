@@ -1,0 +1,5 @@
+http://www.statmethods.net/stats/regression.html
+http://ww2.coastal.edu/kingw/statistics/R-tutorials/multregr.html
+http://strata.uga.edu/6370/rtips/regressionPlots.html
+http://ww2.coastal.edu/kingw/statistics/R-tutorials/multregr.html
+http://ww2.coastal.edu/kingw/statistics/R-tutorials/formulae.html
