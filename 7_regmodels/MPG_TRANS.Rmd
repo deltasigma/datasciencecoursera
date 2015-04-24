@@ -1,34 +1,73 @@
 ---
-title: "MPG: Does Transmission Type Matters?"
-output: pdf_document
+title: 'MPG: Does Transmission Type Matters?'
+output: html_document
 ---
 ## Executive Summary
-In this analisys we explore how a vehicle transmission type affects the MPG performance.
+*Did the report include an executive summary?
+Was the report brief (about 2 pages long) for the main body of the report and no longer than 5 with supporting appendix of figures?
+Was the report done in Rmd (knitr)?
+In this document we analise how the transmission type affects the MPG performance for a vehicle.
 ???Is an automatic or manual transmission better for MPG???
 "Quantify the MPG difference between automatic and manual transmissions"
 
-## Analisys
+## Exploratory Analisys
+*Did the student do some exploratory data analyses?  
+First, we want to understand how the covariates relates to the outcome and how they relates to each other. Some of the variables are highly correlated, meaning that they measure almost the same thing. That is the case for displacement vs cyl. 
+```{r, echo=FALSE}
+library(corrplot)
+require(graphics)
 
-```{r}
-plot(mtcars$mpg ~ mtcars$am)
+# build the matrix
+mcor<-cor(mtcars)
+mcor2<-sqrt(mcor^2)
 
+# plot it
+corrplot(mcor)
+corrplot(mcor2)
 
-model <- lm(mpg ~ am + cyl + disp + hp -1, mtcars)
-
-
-library("ggplot2")g
-carParameter <- ggplot(mtcars, aes(x = am, y = mpg)) + geom_point(size=1)
-carParameter <- carParameter + facet_grid(. ~ cyl)
+pairs(mtcars, main = "mtcars data")
+plot(mtcars$mpg,mtcars$drat)
 ```
 
 
-Did the report include an executive summary?
-Did the student do some exploratory data analyses?
-Did the student do a residual plot and some diagnostics?
-Did the student quantify the uncertainty in their conclusions and/or perform an inference correctly?
+## Model
+To select the final model we used a **backward-elimination** strategy which consists of: 
 
-Did the student interpret the coefficients correctly?
-Did the student fit multiple models and detail their strategy for model selection?
-Did the student answer the questions of interest or detail why the question(s) is (are) not answerable?
-Was the report brief (about 2 pages long) for the main body of the report and no longer than 5 with supporting appendix of figures?
-Was the report done in Rmd (knitr)?
+- start with the model containing all available predictors;
+- remove the predictor that has the least significative *p-value*;
+- refit the model using the remaining predictors;
+- rinse & repeat...
+
+```{r}
+# Fitting the model using all variables and finding best predictors
+modelFull  <- lm(mpg ~ ., data=mtcars)
+final <- step(modelFull, direction = "backward", trace=F)
+```
+
+In **modelFull** we fitted the model with all predictors. Then, using the **step()** function we select and fit the best model. The **final** variable holds this model. We can look the expression for our final model by looking at *final\$call\$formula*: `r capture.output(print(formula(final$call$formula)))`.
+
+It means that the predictors that we will use are **wt**, **qsec** and **am**. We will look at the coefficient and the interpretation for each predictor.
+
+```{r, echo=FALSE}
+final$coefficients
+```
+
+- **wt**: Heavier cars have lower MPG. The increase of 1000lb in car's weigth puts a *3.92 MPG* penalty in performance.
+- **qsec**: The slowest cars have better MPG performance. If the car have more power, which is needed for better *qsec* time, it also translates to poorer fuel efficiency. An increase in one second on the 1/4 mile time translates to a *1.26 MPG* increase.
+- **am**: Automatic transmission have worst performance in MPG holding the others paramaters constant. If the car have **manual** transmission the MPG increases by *2.94*.
+
+## Residual plot/diagnostics
+O check that our model is a good representation 
+```{r, echo=FALSE}
+par(mfrow=c(1,2),mar=c(4,2,3,0))
+plot(final$residuals, main="Residual Plot", ylab="Residuals")
+qqnorm(final$residuals)
+#mtext("Diagnostic Plots", side=3, outer=TRUE, line=-3) 
+```
+
+*Did the student do a residual plot and some diagnostics?
+*Did the student quantify the uncertainty in their conclusions and/or perform an inference correctly?
+
+
+## Conclusions
+*Did the student answer the questions of interest or detail why the question(s) is (are) not answerable?

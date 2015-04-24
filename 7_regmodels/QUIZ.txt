@@ -1,0 +1,24 @@
+Q1
+1. Error(0.300) -> sum(x * w)/sum(w)
+2. 0.8263
+3. -5.344
+4. 1
+5. 0.6
+6. -0.9719
+7. 1.567
+8. ERROR(Nothing about the intercept can be said from the information given.) -> The intercept estimate is $\bar Y - \beta_1 \bar X$ and so will be zero.
+9. 0.573
+10. Var(Y)/Var(X)
+
+Q2
+1. 0.05296 
+2. 0.223 
+3. 18.991
+4. The estimated expected change in mpg per 1,000 lb increase in weight.
+5. 27.57
+6. ERROR(-6.486) ->  -12.973 (fit <- lm(mpg ~ wt, data = mtcars)
+confint(fit)[2, ] * 2) 
+7. It would get multiplied by 100.
+8. ERROR(The new intercept would be β^0+cβ^1) -> the intercept gets subtracted by cβ1
+9. 0.25
+10. ERROR(The residuals must always sum to zero.) -> If an intercept is included, the residuals most likely won't sum to zero.
