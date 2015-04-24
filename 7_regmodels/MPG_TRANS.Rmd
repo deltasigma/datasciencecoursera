@@ -1,9 +1,9 @@
 ---
 title: 'MPG: Does Transmission Type Matters?'
-output: pdf_document
+output: html_document
 ---
 ## Executive Summary
-In this document we analyse the transmission type effect in the MPG performance for a vehicle. We fitted a linear model and studied how the car caracteristics like engine size, cylinder displacement and others can influence. Hopefully this study will help people make better choices in their next car selection regarding this important economical and enviromental issue.
+In this document we analyse the transmission type effect in the MPG performance for a vehicle. We fitted a linear model and studied how the car characteristics like engine size, cylinder displacement and others can influence. Hopefully this study will help people make better choices in their next car selection regarding this important economical and environmental issue.
 
 ## Exploratory Analisys
 First, we want to understand how the factors relates to the outcome and how they relates to each other. Some of the variables are highly correlated, meaning that they measure almost the same thing. That is the case for **displacement** vs **cyl**, so we probably can use only one of those. 
