@@ -1,40 +1,28 @@
 ---
 title: 'MPG: Does Transmission Type Matters?'
-output: html_document
+output: pdf_document
 ---
 ## Executive Summary
-*Did the report include an executive summary?
-Was the report brief (about 2 pages long) for the main body of the report and no longer than 5 with supporting appendix of figures?
-Was the report done in Rmd (knitr)?
-In this document we analise how the transmission type affects the MPG performance for a vehicle.
-???Is an automatic or manual transmission better for MPG???
-"Quantify the MPG difference between automatic and manual transmissions"
+In this document we analyse the transmission type effect in the MPG performance for a vehicle. We fitted a linear model and studied how the car caracteristics like engine size, cylinder displacement and others can influence. Hopefully this study will help people make better choices in their next car selection regarding this important economical and enviromental issue.
 
 ## Exploratory Analisys
-*Did the student do some exploratory data analyses?  
-First, we want to understand how the covariates relates to the outcome and how they relates to each other. Some of the variables are highly correlated, meaning that they measure almost the same thing. That is the case for displacement vs cyl. 
+First, we want to understand how the factors relates to the outcome and how they relates to each other. Some of the variables are highly correlated, meaning that they measure almost the same thing. That is the case for **displacement** vs **cyl**, so we probably can use only one of those. 
 ```{r, echo=FALSE}
 library(corrplot)
 require(graphics)
 
 # build the matrix
 mcor<-cor(mtcars)
-mcor2<-sqrt(mcor^2)
 
 # plot it
 corrplot(mcor)
-corrplot(mcor2)
-
-pairs(mtcars, main = "mtcars data")
-plot(mtcars$mpg,mtcars$drat)
 ```
-
 
 ## Model
 To select the final model we used a **backward-elimination** strategy which consists of: 
 
 - start with the model containing all available predictors;
-- remove the predictor that has the least significative *p-value*;
+- remove the predictor that has the least significant *p-value*;
 - refit the model using the remaining predictors;
 - rinse & repeat...
 
@@ -52,22 +40,30 @@ It means that the predictors that we will use are **wt**, **qsec** and **am**. W
 final$coefficients
 ```
 
-- **wt**: Heavier cars have lower MPG. The increase of 1000lb in car's weigth puts a *3.92 MPG* penalty in performance.
+- **wt**: Heavier cars have lower MPG. The increase of 1000lb in car's weight puts a *3.92 MPG* penalty in performance.
 - **qsec**: The slowest cars have better MPG performance. If the car have more power, which is needed for better *qsec* time, it also translates to poorer fuel efficiency. An increase in one second on the 1/4 mile time translates to a *1.26 MPG* increase.
-- **am**: Automatic transmission have worst performance in MPG holding the others paramaters constant. If the car have **manual** transmission the MPG increases by *2.94*.
+- **am**: Automatic transmission have worst performance in MPG holding the others parameters constant. If the car have **manual** transmission the MPG increases by *2.94*.
 
 ## Residual plot/diagnostics
-O check that our model is a good representation 
+To check that our model is a good representation of the phenomena under study we plotted the residuals and the QQ Plot. As we can see, the model is a good fit and can be used for further investigation on variables that affects fuel consumption.
 ```{r, echo=FALSE}
 par(mfrow=c(1,2),mar=c(4,2,3,0))
 plot(final$residuals, main="Residual Plot", ylab="Residuals")
 qqnorm(final$residuals)
-#mtext("Diagnostic Plots", side=3, outer=TRUE, line=-3) 
 ```
 
-*Did the student do a residual plot and some diagnostics?
-*Did the student quantify the uncertainty in their conclusions and/or perform an inference correctly?
+We can also create 95% confidence intervals for our coefficients. We can use this information to check if we have enough evidence to conclude that one of the two transmission types are better in MPG performance.
 
+```{r, echo=FALSE}
+confInterval <- data.frame(summary(final)$coefficients)
+confInterval$min <- (confInterval$Estimate - 1 * qt(.975, df = final$df)
+                     * confInterval$Std..Error)
+confInterval$max <- (confInterval$Estimate + 1 * qt(.975, df = final$df)
+                     * confInterval$Std..Error)
+confInterval[c(1,2,5,6)]
+```
+
+Our confidence interval for the **am** variable does not include 0, so we have evidence that changing the transmission type really affects car MPG.
 
 ## Conclusions
-*Did the student answer the questions of interest or detail why the question(s) is (are) not answerable?
+From our modeling we were able to conclude that manual transmissions is better for MPG. The difference is 2.94 MPG (+/- 2.89) improved mileage.
