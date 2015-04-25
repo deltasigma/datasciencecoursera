@@ -1,0 +1,55 @@
+---
+title: "MachineLearning"
+author: "Fábio Franco Costa"
+date: "April 24, 2015"
+output: html_document
+---
+
+
+You should create a report describing  
+
+* how you built your model,
+* how you used cross validation  
+* what you think the expected out of sample error is, 
+* and why you made the choices you did.  
+* You will also use your prediction model to predict 20 different test cases. 
+
+
+```{r}
+# Load packages and set seed
+library("caret")
+set.seed(666)
+
+# Read Data
+pmlData <- read.csv("pml-training.csv")
+pmlFinalTest <- read.csv("pml-testing.csv") 
+
+# Filter relevant columns
+
+# Convert variables to factor 
+
+# Preprocess training data
+
+# Create trainning datasets
+inTrain <- createDataPartition(y = pmlData$classe, p = 0.8, list = F)
+trainning <- pmlData[inTrain,]
+testing <- pmlData[-inTrain,]
+
+# Fit first model: rpart
+modelFit <- train(classe ~ .,
+                  data = trainning,  
+                  method=c("rpart"))
+
+# Test the model
+predictions <- predict(modelFit, newdata = testing)
+confusionMatrix(predictions, testing$Survived)
+
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
