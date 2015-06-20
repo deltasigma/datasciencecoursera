@@ -1,0 +1,30 @@
+Minha apresentação de Teste
+========================================================
+author: Fábio Costa
+date:`r date()` 
+
+First Slide
+========================================================
+transition: rotate
+
+For more details on authoring R presentations click the
+**Help** button on the toolbar.
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+Slide With Code
+========================================================
+transition: rotate
+
+```{r}
+summary(cars)
+```
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+plot(cars)
+```
