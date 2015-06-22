@@ -29,12 +29,12 @@ shinyUI(fluidPage(
   # Configuration
   fluidRow(
       column(4,
-             checkboxGroupInput("businessline", 
-                                label = h4("Business Line"), 
-                                choices = list("P&C" = 1, 
-                                               "Life & Pension" = 2, 
-                                               "Health" = 3),
-                                selected = c(1,2,3))
+             checkboxGroupInput("index", 
+                                label = h4("Index"), 
+                                choices = list("Premiuns" = 'premiums', 
+                                               "Claims" = 'claims', 
+                                               "Commissions" = 'commissions'),
+                                selected = c('premiums','claims','commissions'))
              ),
       column(4,
              dateRangeInput("timeframe", 
@@ -48,10 +48,10 @@ shinyUI(fluidPage(
       column(4,
              checkboxGroupInput("size", 
                                 label = h4("Company Size"), 
-                                choices = list("Big" = 1, 
-                                               "Average" = 2,
-                                               "Small" = 3),
-                                selected = c(1,2,3))
+                                choices = list("Big" = 'big', 
+                                               "Medium" = 'medium',
+                                               "Small" = 'small'),
+                                selected = c('big','medium','small'))
              )
       )
   
